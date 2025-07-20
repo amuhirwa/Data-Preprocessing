@@ -1,6 +1,10 @@
+You're right, we can simplify that section. Here is the updated `README.md` with the more direct instruction for running the project.
+
+-----
+
 # Product Recommendation Model
 
-[cite\_start]This project involves processing and merging customer data from social media profiles and transaction histories to train a machine learning model[cite: 42, 43, 44]. [cite\_start]The model's goal is to predict which product a customer is likely to purchase[cite: 45].
+This project involves processing and merging customer data from social media profiles and transaction histories to train a machine learning model. The model's goal is to predict which product a customer is likely to purchase.
 
 -----
 
@@ -40,16 +44,8 @@ All the required Python libraries are listed in the `requirements.txt` file. Ins
 pip install -r requirements.txt
 ```
 
-This file will contain the necessary libraries such as `pandas`, `scikit-learn`, and `numpy`.
-
 -----
 
 ## 🚀 Running the Project
 
-The core logic for data merging, model training, and evaluation is contained within the Jupyter Notebook. Once your environment is set up and dependencies are installed, you can start Jupyter Lab:
-
-```bash
-jupyter lab
-```
-
-From the Jupyter interface in your browser, open the main notebook file (e.g., `Formative_2_Data_Preprocessing.ipynb`) and run the cells in order from top to bottom.
+The core logic for data merging, model training, and evaluation is contained within the `Formative_2_Data_Preprocessing.ipynb` notebook. After setting up the environment, simply run the notebook cells in order to see the results.
