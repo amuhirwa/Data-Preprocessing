@@ -1,7 +1,3 @@
-You're right, we can simplify that section. Here is the updated `README.md` with the more direct instruction for running the project.
-
------
-
 # Product Recommendation Model
 
 This project involves processing and merging customer data from social media profiles and transaction histories to train a machine learning model. The model's goal is to predict which product a customer is likely to purchase.
@@ -48,4 +44,4 @@ pip install -r requirements.txt
 
 ## 🚀 Running the Project
 
-The core logic for data merging, model training, and evaluation is contained within the `Formative_2_Data_Preprocessing.ipynb` notebook. After setting up the environment, simply run the notebook cells in order to see the results.
+The core logic for data merging, model training, and evaluation is contained within the `data_merge.ipynb` notebook. After setting up the environment, simply run the notebook cells in order to see the results.
