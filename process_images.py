@@ -16,7 +16,7 @@ EXPRESSIONS = ['neutral', 'smiling', 'surprised']
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Pretrained model for embeddings
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights='DEFAULT')
 model = torch.nn.Sequential(*(list(model.children())[:-1])) 
 model.eval()
 model.to(DEVICE)
@@ -30,7 +30,7 @@ transform = transforms.Compose([
 def get_image_paths():
     image_paths = []
     for fname in os.listdir(IMAGE_DIR):
-        if fname.lower().endswith(('.jpg', '.png')):
+        if fname.lower().endswith(('.jpg', '.png', 'jpeg')):
             base = os.path.splitext(fname)[0]
             parts = base.split('_')
             if len(parts) < 2:
@@ -44,10 +44,13 @@ def get_image_paths():
     return image_paths
 
 def display_image(img, title):
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    plt.title(title)
-    plt.axis('off')
-    plt.show()
+    # Save image instead of displaying (better for batch processing)
+    print(f"Processing: {title}")
+    # Uncomment the lines below if you want to actually display images
+    # plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    # plt.title(title)
+    # plt.axis('off')
+    # plt.show()
 
 def augment_image(img):
     # Original
