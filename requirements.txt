@@ -1,5 +1,14 @@
+HEAD
 numpy
 pandas
 scikit-learn
 xgboost
 jupyterlab
+opencv-python
+matplotlib
+numpy
+pandas
+torch
+torchvision
+Pillow 
+ Afsa

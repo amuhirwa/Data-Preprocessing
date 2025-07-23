@@ -1,0 +1,39 @@
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Output files
+*.csv
+*.xlsx
+*.json
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch models
+*.pth
+*.pt
+
+# Data files (you might want to uncomment these if you don't want to track data)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.bmp
