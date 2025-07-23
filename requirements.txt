@@ -4,4 +4,7 @@ numpy
 pandas
 torch
 torchvision
-Pillow 
+Pillow
+scikit-learn
+xgboost
+jupyterlab
