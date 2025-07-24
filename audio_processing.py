@@ -266,36 +266,39 @@ def add_background_noise(y, noise_factor=0.005):
 def extract_features(y, sr):
     """
     Extract audio features: MFCCs, Spectral Roll-off, Energy
-    Returns flattened feature arrays
+    Returns summary statistics for each feature
     """
     try:
         print(f"      Extracting features from audio with {len(y)} samples at {sr}Hz...")
-        
+
         # Extract MFCCs (13 coefficients)
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-        print(f"      MFCCs shape: {mfccs.shape}")
-        
         # Extract Spectral Roll-off (85% roll-off)
         spectral_rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr, roll_percent=0.85)
-        print(f"      Spectral rolloff shape: {spectral_rolloff.shape}")
-        
         # Extract Energy (Root Mean Square)
         energy = librosa.feature.rms(y=y)
-        print(f"      Energy shape: {energy.shape}")
-        
-        # Flatten arrays
-        mfccs_flat = mfccs.flatten()
-        spectral_rolloff_flat = spectral_rolloff.flatten()
-        energy_flat = energy.flatten()
-        
-        print(f"      Flattened - MFCCs: {len(mfccs_flat)}, Rolloff: {len(spectral_rolloff_flat)}, Energy: {len(energy_flat)}")
-        
-        return mfccs_flat, spectral_rolloff_flat, energy_flat
-    
+
+        # Compute summary statistics for each feature
+        features = {
+            'mfccs_mean': np.mean(mfccs),
+            'mfccs_std': np.std(mfccs),
+            'mfccs_min': np.min(mfccs),
+            'mfccs_max': np.max(mfccs),
+            'rolloff_mean': np.mean(spectral_rolloff),
+            'rolloff_std': np.std(spectral_rolloff),
+            'rolloff_min': np.min(spectral_rolloff),
+            'rolloff_max': np.max(spectral_rolloff),
+            'energy_mean': np.mean(energy),
+            'energy_std': np.std(energy),
+            'energy_min': np.min(energy),
+            'energy_max': np.max(energy),
+        }
+        return features
+
     except Exception as e:
         print(f"Error extracting features: {e}")
         print(f"Traceback: {traceback.format_exc()}")
-        return np.array([]), np.array([]), np.array([])
+        return {}
 
 def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
     """
@@ -303,59 +306,55 @@ def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
     Returns list of feature dictionaries
     """
     features_list = []
-    
+
     # Process original audio
     print(f"    Processing original audio...")
-    mfccs, spectral_rolloff, energy = extract_features(y, sr)
-    
-    if len(mfccs) > 0:  # Only add if features were successfully extracted
+    features = extract_features(y, sr)
+
+    if features:  # Only add if features were successfully extracted
         features_list.append({
             'member': member,
             'phrase': phrase,
             'augmentation': 'original',
-            'mfccs': mfccs.tolist(),
-            'spectral_rolloff': spectral_rolloff.tolist(),
-            'energy': energy.tolist()
+            **features
         })
         print(f"      ✓ Original features extracted successfully")
     else:
         print(f"      ✗ Failed to extract original features")
-    
+
     # Apply and process augmentations
     augmentations = [
         ('pitch_shift', lambda: apply_pitch_shift(y, sr, n_steps=4)),
         ('time_stretch', lambda: apply_time_stretch(y, rate=1.2)),
         ('background_noise', lambda: add_background_noise(y, noise_factor=0.005))
     ]
-    
+
     for aug_name, aug_func in augmentations:
         print(f"    Processing {aug_name} augmentation...")
         try:
             y_aug = aug_func()
-            
+
             if y_aug is not None and len(y_aug) > 0:
                 # Extract features for augmented audio
-                mfccs_aug, spectral_rolloff_aug, energy_aug = extract_features(y_aug, sr)
-                
-                if len(mfccs_aug) > 0:  # Only add if features were successfully extracted
+                features_aug = extract_features(y_aug, sr)
+
+                if features_aug:  # Only add if features were successfully extracted
                     features_list.append({
                         'member': member,
                         'phrase': phrase,
                         'augmentation': aug_name,
-                        'mfccs': mfccs_aug.tolist(),
-                        'spectral_rolloff': spectral_rolloff_aug.tolist(),
-                        'energy': energy_aug.tolist()
+                        **features_aug
                     })
                     print(f"      ✓ {aug_name} features extracted successfully")
                 else:
                     print(f"      ✗ Failed to extract {aug_name} features")
             else:
                 print(f"      ✗ {aug_name} augmentation returned empty/invalid audio")
-            
+
         except Exception as e:
             print(f"      ✗ Error processing {aug_name}: {e}")
             print(f"      Traceback: {traceback.format_exc()}")
-    
+
     print(f"    Total features extracted: {len(features_list)}")
     return features_list
 
