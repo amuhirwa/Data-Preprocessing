@@ -71,7 +71,7 @@ def load_audio_robust(file_path):
     
     print(f"      File size: {file_size} bytes")
     
-    # Method 1: Try librosa with default settings
+    # Method 1: Try librosa with default sample rate
     try:
         print("      Trying librosa (default)...")
         y, sr = librosa.load(file_path)
@@ -449,7 +449,7 @@ def main():
     audio_data = get_audio_paths()
     
     if not audio_data:
-        print("\n❌ No audio files found!")
+        print("\n No audio files found!")
         print("Expected file structure:")
         print("  assets/audios/member1_approve.wav")
         print("  assets/audios/member1_confirm.wav") 
@@ -513,7 +513,7 @@ def main():
     print(f"Files failed: {processing_stats['files_failed']}")
     print(f"Total feature records: {processing_stats['features_extracted']}")
     
-    # Save features to CSV with enhanced error handling
+    # Save features to CSV 
     if all_features:
         print(f"\n=== SAVING FEATURES TO CSV ===")
         success = save_features_to_csv(all_features, FEATURES_CSV)
@@ -542,10 +542,10 @@ def main():
             success_rate = processing_stats['files_processed'] / total_expected * 100 if total_expected > 0 else 0
             print(f"\nProcessing success rate: {processing_stats['files_processed']}/{total_expected} files ({success_rate:.1f}%)")
         else:
-            print("❌ Failed to save CSV file!")
+            print("Failed to save CSV file!")
         
     else:
-        print("❌ No features were extracted. Please check your audio files and try again.")
+        print("No features were extracted. Please check your audio files and try again.")
         print("\nTroubleshooting checklist:")
         print("1. Ensure audio files exist in the 'assets/audios' directory")
         print("2. Check file naming convention: membername_approve.ext or membername_confirm.ext")
