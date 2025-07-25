@@ -13,7 +13,7 @@ __pycache__/
 *.csv
 *.xlsx
 *.json
-
+*.ipynb
 # IDE files
 .vscode/
 .idea/
