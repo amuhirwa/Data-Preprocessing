@@ -137,24 +137,56 @@ class ModelTrainer:
 
         return model, acc, f1, loss
 
-    def train_product_recommendation_model(self, X_train, X_test, y_train, y_test):
+    def train_product_recommendation_model(self, product_df):
         print("Training Product Recommendation Model...")
 
+        # Drop identifiers
+        product_df = product_df.drop(columns=['customer_id_new', 'transaction_id'])
+
+        # Handle date
+        product_df['purchase_date'] = pd.to_datetime(product_df['purchase_date'])
+        product_df['purchase_month'] = product_df['purchase_date'].dt.month
+        product_df = product_df.drop(columns=['purchase_date'])  # original date not needed
+
+        # Encode categorical features
+        cat_cols = ['social_media_platform', 'review_sentiment']
+        product_df = pd.get_dummies(product_df, columns=cat_cols, drop_first=True)
+
+        # Encode target
+        le = LabelEncoder()
+        y = le.fit_transform(product_df['product_category'])
+        self.label_encoders['product'] = le
+        X = product_df.drop(columns=['product_category'])
+
+        # Train/test split
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+
+        # Train model
         model = RandomForestClassifier(n_estimators=100, random_state=42)
         model.fit(X_train, y_train)
 
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred, average='weighted')
+        # Predict probabilities
+        y_pred_proba = model.predict_proba(X_test)
 
-        print(f"Product Recommendation - Accuracy: {acc:.3f}, F1-Score: {f1:.3f}")
-        cv_scores = cross_val_score(model, X_train, y_train, cv=5)
-        print(f"CV scores: {cv_scores}, Mean: {cv_scores.mean():.3f} (+/- {cv_scores.std() * 2:.3f})")
+        # Compute log loss
+        loss = log_loss(y_test, y_pred_proba)
 
+
+        print(f"Product Recommendation - Accuracy: {acc:.3f}, F1-Score: {f1:.3f}, Log Loss: {loss:.3f}")
+        print(classification_report(y_test, y_pred, target_names=le.classes_))
+
+        # Save model
         self.models['product_recommendation'] = model
         joblib.dump(model, 'models/product_recommendation_model.pkl')
+        joblib.dump(le, 'models/product_label_encoder.pkl')
 
-        return model, acc, f1
+        return model, acc, f1, loss
+
 
     def predict_from_image(image_path):
       # Load model + preprocessing
@@ -254,14 +286,14 @@ def main():
 
     face_model, face_acc, face_f1, face_loss = trainer.train_facial_recognition_model(image_features)
     voice_model, voice_acc, voice_f1, voice_loss = trainer.train_voice_verification_model(audio_features)
-    # product_model, product_acc, product_f1 = trainer.train_product_recommendation_model(X_train, X_test, y_train, y_test)
+    product_model, product_acc, product_f1, product_loss = trainer.train_product_recommendation_model(X_train, X_test, y_train, y_test)
 
     trainer.evaluate_models()
 
     summary = {
         'facial_recognition': {'accuracy': face_acc, 'f1_score': face_f1, 'loss': face_loss},
         'voice_verification': {'accuracy': voice_acc, 'f1_score': voice_f1, 'loss': voice_loss},
-        # 'product_recommendation': {'accuracy': product_acc, 'f1_score': product_f1}
+        'product_recommendation': {'accuracy': product_acc, 'f1_score': product_f1, 'loss': product_loss}
     }
 
     summary_df = pd.DataFrame(summary).T
