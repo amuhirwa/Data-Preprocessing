@@ -304,7 +304,7 @@ def extract_features(y, sr):
         print(f"Traceback: {traceback.format_exc()}")
         return {}
 
-def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
+def process_audio_augmentations(y, sr, member, phrase, verbose=True, show_plots=False):
     """
     Process audio with augmentations and extract features
     Returns list of feature dictionaries
@@ -322,7 +322,8 @@ def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
             'augmentation': 'original',
             **features
         })
-        print(f"      ✓ Original features extracted successfully")
+        if verbose:
+            print(f"      ✓ Original features extracted successfully")
     else:
         print(f"      ✗ Failed to extract original features")
 
@@ -334,7 +335,8 @@ def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
     ]
 
     for aug_name, aug_func in augmentations:
-        print(f"    Processing {aug_name} augmentation...")
+        if verbose:
+            print(f"    Processing {aug_name} augmentation...")
         try:
             y_aug = aug_func()
 
@@ -349,7 +351,8 @@ def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
                         'augmentation': aug_name,
                         **features_aug
                     })
-                    print(f"      ✓ {aug_name} features extracted successfully")
+                    if verbose:
+                        print(f"      ✓ {aug_name} features extracted successfully")
                 else:
                     print(f"      ✗ Failed to extract {aug_name} features")
             else:
@@ -359,7 +362,8 @@ def process_audio_augmentations(y, sr, member, phrase, show_plots=False):
             print(f"      ✗ Error processing {aug_name}: {e}")
             print(f"      Traceback: {traceback.format_exc()}")
 
-    print(f"    Total features extracted: {len(features_list)}")
+    if verbose:
+        print(f"    Total features extracted: {len(features_list)}")
     return features_list
 
 def save_features_to_csv(all_features, csv_path):

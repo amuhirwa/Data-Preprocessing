@@ -258,9 +258,12 @@ class ModelTrainer:
       le = joblib.load(BASE_DIR / 'models/voice_label_encoder.pkl')
 
       # Extract features like in training
-      phrase_features = process_audio_augmentations(y, sr, "michael", "approve")
+      phrase_features = process_audio_augmentations(y, sr, "None", "none", verbose=False)
       exclude = ['member', 'phrase', 'augmentation']
-      filtered_features = {k: v for k, v in phrase_features[0].items() if k not in exclude}
+      try:
+        filtered_features = {k: v for k, v in phrase_features[0].items() if k not in exclude}
+      except IndexError:
+          raise ValueError("Could not process audio file!")
       X = np.array(list(filtered_features.values())).reshape(1, -1)
       X_scaled = scaler.transform(X)
 
