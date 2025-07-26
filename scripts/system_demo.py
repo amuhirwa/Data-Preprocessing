@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from PIL import Image
 import librosa
@@ -34,30 +35,54 @@ def product_recommendation(customer_id):
     return prediction
 
 # System simulation
-def simulate_system():
+def run_system(face_image=None, voice_audio=None, customer_id=None):
     print("=== User Identity and Product Recommendation System ===")
-    face_image = input("Enter path to face image (e.g., assets/images/member_neutral.jpg): ")
+    if not face_image:
+        face_image = input("Enter path to face image (e.g., assets/images/member_neutral.jpg): ")
     recognition_result, matched_member = facial_recognition(face_image)
     if recognition_result:
-        print(f"Face recognized as {matched_member}. Proceeding to voice verification...")
+        print(f"Face recognized. Making call to get product recommendation...")
     else:
         print("Access denied: Unrecognized face.")
         return
+    
+    print("-" * 50)
+    if not customer_id:
+        customer_id = input("Enter customer ID (e.g., A181): ")
+    recommendation = product_recommendation(customer_id)
+
     print("-" * 50)
     
-    voice_audio = input("Enter path to voice sample: ")
+    if not voice_audio:
+        voice_audio = input("Enter path to voice sample to proceed to get the product recommendation: ")
     if voice_verification(voice_audio) == matched_member:
         print("*" * 50)
-        print("Voice verified. Proceeding to product recommendation...")
+        print(f"Voice verified. Welcome {matched_member}! Proceeding to display product recommendation...")
     else:
         print("*" * 50)
-        print("Access denied: Unrecognized voice.")
+        print("Access denied: Unrecognized or incorrect voice.")
         return
     
-    print("-" * 50)
-    customer_id = input("Enter customer ID (e.g., A178): ")
-    recommendation = product_recommendation(customer_id)
     print(f"Product recommendation: {recommendation}")
 
+def simulate_all():
+    print("=== SIMULATING UNAUTHORIZED ATTEMPT UNKNOWN FACE ===")
+    run_system(face_image=BASE_DIR / "assets/images/unauthorized_image.jpg", voice_audio=BASE_DIR / "assets/audios/michael_confirm.m4a", customer_id="A181")
+    print("\n" + "="*50 + "\n")
+    print("=== SIMULATING UNAUTHORIZED ATTEMPT MISMATCH FACE AND VOICE ===")
+    run_system(face_image=BASE_DIR / "assets/images/michael_neutral.jpg", voice_audio=BASE_DIR / "assets/audios/amandine_approve.m4a", customer_id="A181")
+    print("=== SIMULATING UNKNOWN CUSTOMER ID ===")
+    try:
+        run_system(face_image=BASE_DIR / "assets/images/afsa_neutral.jpg", voice_audio=BASE_DIR / "assets/audios/afsa_approve.m4a", customer_id="A1")
+    except Exception as e:
+        print(e)
+    print("\n" + "="*50 + "\n")
+    print("=== SIMULATING AUTHORIZED ATTEMPT ===")
+    run_system(face_image=BASE_DIR / "assets/images/michael_neutral.jpg", voice_audio=BASE_DIR / "assets/audios/michael_confirm.m4a", customer_id="A181")
+
+
 if __name__ == "__main__":
-    simulate_system()
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "simulate":
+        simulate_all()
+    else:
+        run_system()

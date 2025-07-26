@@ -14,6 +14,11 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
+# Ignore warnings
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 # Define the project base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -267,13 +272,14 @@ def add_background_noise(y, noise_factor=0.005):
         print(f"Error adding background noise: {e}")
         return y
 
-def extract_features(y, sr):
+def extract_features(y, sr, verbose=True):
     """
     Extract audio features: MFCCs, Spectral Roll-off, Energy
     Returns summary statistics for each feature
     """
     try:
-        print(f"      Extracting features from audio with {len(y)} samples at {sr}Hz...")
+        if verbose:
+            print(f"      Extracting features from audio with {len(y)} samples at {sr}Hz...")
 
         # Extract MFCCs (13 coefficients)
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
@@ -312,8 +318,9 @@ def process_audio_augmentations(y, sr, member, phrase, verbose=True, show_plots=
     features_list = []
 
     # Process original audio
-    print(f"    Processing original audio...")
-    features = extract_features(y, sr)
+    if verbose:
+        print(f"    Processing original audio...")
+    features = extract_features(y, sr, verbose=verbose)
 
     if features:  # Only add if features were successfully extracted
         features_list.append({
@@ -342,7 +349,7 @@ def process_audio_augmentations(y, sr, member, phrase, verbose=True, show_plots=
 
             if y_aug is not None and len(y_aug) > 0:
                 # Extract features for augmented audio
-                features_aug = extract_features(y_aug, sr)
+                features_aug = extract_features(y_aug, sr, verbose=verbose)
 
                 if features_aug:  # Only add if features were successfully extracted
                     features_list.append({
