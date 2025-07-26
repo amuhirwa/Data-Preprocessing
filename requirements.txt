@@ -1,6 +1,10 @@
-HEAD
+opencv-python
+matplotlib
 numpy
 pandas
+torch
+torchvision
+Pillow
 scikit-learn
 xgboost
 jupyterlab
@@ -11,4 +15,3 @@ pandas
 torch
 torchvision
 Pillow 
- Afsa

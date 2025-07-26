@@ -55,9 +55,9 @@ def display_image(img, title):
 def augment_image(img):
     # Original
     aug_imgs = {'original': img}
-    # Rotated (by 15 degrees)
+    # Rotated (by 45 degrees)
     (h, w) = img.shape[:2]
-    M = cv2.getRotationMatrix2D((w // 2, h // 2), 15, 1.0)
+    M = cv2.getRotationMatrix2D((w // 2, h // 2), 45, 1.0)
     aug_imgs['rotated'] = cv2.warpAffine(img, M, (w, h))
     # Flipped (horizontal)
     aug_imgs['flipped'] = cv2.flip(img, 1)
