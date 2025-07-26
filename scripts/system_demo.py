@@ -55,7 +55,7 @@ def run_system(face_image=None, voice_audio=None, customer_id=None):
     
     if not voice_audio:
         voice_audio = input("Enter path to voice sample to proceed to get the product recommendation: ")
-    if voice_verification(voice_audio) == matched_member:
+    if voice_verification(voice_audio).lower() == matched_member.lower():
         print("*" * 50)
         print(f"Voice verified. Welcome {matched_member}! Proceeding to display product recommendation...")
     else:
