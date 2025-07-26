@@ -19,6 +19,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from PIL import Image
+from pathlib import Path
+
+# Set the project base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class ModelTrainer:
     def __init__(self):
@@ -32,15 +36,9 @@ class ModelTrainer:
         """
         Load all processed datasets
         """
-        image_features = pd.read_csv('image_features.csv')
-        audio_features = pd.read_csv('audio_features.csv')
-        product_df = pd.read_csv('merged_customer_data.csv')
-
-        # Optional: product recommendation data
-        X_train = None
-        X_test = None
-        y_train = None
-        y_test = None
+        image_features = pd.read_csv(BASE_DIR / 'data' / 'image_features.csv')
+        audio_features = pd.read_csv(BASE_DIR / 'data' / 'audio_features.csv')
+        product_df = pd.read_csv( BASE_DIR / 'data' / 'merged_customer_data.csv')
 
         return image_features, audio_features, product_df
 
@@ -90,10 +88,10 @@ class ModelTrainer:
         print(classification_report(y_test, y_pred, target_names=le.classes_))
 
         self.models['face_recognition'] = model
-        joblib.dump(model, 'models/face_recognition_model.pkl')
-        joblib.dump(le, 'models/face_label_encoder.pkl')
-        joblib.dump(self.image_scaler, 'models/image_scaler.pkl')
-        joblib.dump(self.image_pca, 'models/image_pca.pkl')
+        joblib.dump(model, BASE_DIR / 'models/face_recognition_model.pkl')
+        joblib.dump(le, BASE_DIR / 'models/face_label_encoder.pkl')
+        joblib.dump(self.image_scaler, BASE_DIR / 'models/image_scaler.pkl')
+        joblib.dump(self.image_pca, BASE_DIR / 'models/image_pca.pkl')
 
         return model, acc, f1, loss
 
@@ -132,9 +130,9 @@ class ModelTrainer:
 
         # Save
         self.models['voice_verification'] = model
-        joblib.dump(model, 'models/voice_verification_model.pkl')
-        joblib.dump(le, 'models/voice_label_encoder.pkl')
-        joblib.dump(self.audio_scaler, 'models/audio_scaler.pkl')
+        joblib.dump(model, BASE_DIR / 'models/voice_verification_model.pkl')
+        joblib.dump(le, BASE_DIR / 'models/voice_label_encoder.pkl')
+        joblib.dump(self.audio_scaler, BASE_DIR / 'models/audio_scaler.pkl')
 
         return model, acc, f1, loss
 
@@ -183,18 +181,18 @@ class ModelTrainer:
 
         # Save model
         self.models['product_recommendation'] = model
-        joblib.dump(model, 'models/product_recommendation_model.pkl')
-        joblib.dump(le, 'models/product_label_encoder.pkl')
+        joblib.dump(model, BASE_DIR / 'models/product_recommendation_model.pkl')
+        joblib.dump(le, BASE_DIR / 'models/product_label_encoder.pkl')
 
         return model, acc, f1, loss
 
 
     def predict_from_image(image_path):
       # Load model + preprocessing
-      model = joblib.load('models/face_recognition_model.pkl')
-      scaler = joblib.load('models/image_scaler.pkl')
-      pca = joblib.load('models/image_pca.pkl')
-      le = joblib.load('models/face_label_encoder.pkl')
+      model = joblib.load(BASE_DIR / 'models/face_recognition_model.pkl')
+      scaler = joblib.load(BASE_DIR / 'models/image_scaler.pkl')
+      pca = joblib.load(BASE_DIR / 'models/image_pca.pkl')
+      le = joblib.load(BASE_DIR / 'models/face_label_encoder.pkl')
 
       # Set device
       device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -255,9 +253,9 @@ class ModelTrainer:
       y, sr = display_audio_samples(audio_path, f'None - none', show_plots=False)
 
       # Load models
-      model = joblib.load('models/voice_verification_model.pkl')
-      scaler = joblib.load('models/audio_scaler.pkl')
-      le = joblib.load('models/voice_label_encoder.pkl')
+      model = joblib.load(BASE_DIR / 'models/voice_verification_model.pkl')
+      scaler = joblib.load(BASE_DIR / 'models/audio_scaler.pkl')
+      le = joblib.load(BASE_DIR / 'models/voice_label_encoder.pkl')
 
       # Extract features like in training
       phrase_features = process_audio_augmentations(y, sr, "michael", "approve")
@@ -279,7 +277,7 @@ class ModelTrainer:
                 print(f"Top 3 Feature Importances: {sorted(importances, reverse=True)[:3]}")
 
 def main():
-    os.makedirs('models', exist_ok=True)
+    os.makedirs(BASE_DIR / 'models', exist_ok=True)
     trainer = ModelTrainer()
 
     print("Loading data...")
@@ -298,7 +296,7 @@ def main():
     }
 
     summary_df = pd.DataFrame(summary).T
-    summary_df.to_csv('models/training_summary.csv')
+    summary_df.to_csv(BASE_DIR / 'models/training_summary.csv')
     print("\n======== TRAINING COMPLETE ========")
 
 if __name__ == "__main__":

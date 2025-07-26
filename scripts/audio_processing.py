@@ -12,10 +12,14 @@ from pydub import AudioSegment
 from PIL import Image
 import traceback
 from datetime import datetime
+from pathlib import Path
+
+# Define the project base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Set the directory for audio files
-AUDIO_DIR = 'assets/audios'
-FEATURES_CSV = 'audio_features.csv'
+AUDIO_DIR = BASE_DIR / 'assets' / 'audios'
+FEATURES_CSV = BASE_DIR / 'data' / 'audio_features.csv'
 
 # Expected phrases based on the requirements
 PHRASES = ['approve', 'confirm']  # For "Yes, approve" and "Confirm transaction"

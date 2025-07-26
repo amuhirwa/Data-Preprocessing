@@ -7,6 +7,10 @@ import tensorflow as tf
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics.pairwise import cosine_similarity
+from pathlib import Path
+
+# Set the project base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Comment out model loading for now (uncomment and replace paths when models are available)
 # face_model = tf.keras.models.load_model('path_to_your_face_model.h5')  # Placeholder
@@ -20,7 +24,7 @@ product_model = RandomForestClassifier(
     n_estimators=200,
     random_state=42
 )
-merged_df = pd.read_csv('merged_customer_data.csv')
+merged_df = pd.read_csv(BASE_DIR / 'data' / 'merged_customer_data.csv')
 features = ['engagement_score', 'purchase_interest_score', 'review_sentiment', 'social_media_platform', 'engagement_level']
 X = pd.get_dummies(merged_df[features], columns=['review_sentiment', 'social_media_platform', 'engagement_level'], drop_first=True)
 le = LabelEncoder()
@@ -28,7 +32,7 @@ y = le.fit_transform(merged_df['product'])
 product_model.fit(X, y)  # Train with the saved dataset
 
 # Load image_features.csv for facial recognition
-image_features_df = pd.read_csv('image_features.csv')
+image_features_df = pd.read_csv(BASE_DIR / 'data' / 'image_features.csv')
 known_embeddings = np.array([np.array(eval(emb)) for emb in image_features_df['embedding']])
 known_members = image_features_df['member'].values
 
