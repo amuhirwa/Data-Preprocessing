@@ -11,7 +11,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-IMAGE_DIR = 'assets/images'
+IMAGE_DIR = BASE_DIR / 'assets/images'
 FEATURES_CSV = BASE_DIR / 'data' /  'image_features.csv'
 AUGMENTATIONS = ['original', 'rotated', 'flipped', 'grayscale']
 EXPRESSIONS = ['neutral', 'smiling', 'surprised']
