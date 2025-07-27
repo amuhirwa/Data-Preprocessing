@@ -34,6 +34,7 @@ class ModelTrainer:
         """
         image_features = pd.read_csv('image_features.csv')
         audio_features = pd.read_csv('audio_features.csv')
+        product_df = pd.read_csv('merged_customer_data.csv')
 
         # Optional: product recommendation data
         X_train = None
@@ -41,7 +42,7 @@ class ModelTrainer:
         y_train = None
         y_test = None
 
-        return image_features, audio_features, X_train, X_test, y_train, y_test
+        return image_features, audio_features, product_df
 
     def train_facial_recognition_model(self, image_features):
         print("Training Facial Recognition Model...")
@@ -282,11 +283,11 @@ def main():
     trainer = ModelTrainer()
 
     print("Loading data...")
-    image_features, audio_features, X_train, X_test, y_train, y_test = trainer.load_data()
+    image_features, audio_features, product_df = trainer.load_data()
 
     face_model, face_acc, face_f1, face_loss = trainer.train_facial_recognition_model(image_features)
     voice_model, voice_acc, voice_f1, voice_loss = trainer.train_voice_verification_model(audio_features)
-    product_model, product_acc, product_f1, product_loss = trainer.train_product_recommendation_model(X_train, X_test, y_train, y_test)
+    product_model, product_acc, product_f1, product_loss = trainer.train_product_recommendation_model(product_df)
 
     trainer.evaluate_models()
 
